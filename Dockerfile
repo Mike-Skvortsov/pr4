@@ -1,20 +1,19 @@
-# Вихідний образ
-FROM node:14
+FROM node:16 as build
 
-# Створення робочої директорії в контейнері
 WORKDIR /app
 
-# Копіюємо package.json і package-lock.json
 COPY package*.json ./
 
-# Встановлюємо залежності
 RUN npm install
 
-# Копіюємо всі файли проекту
 COPY . .
 
-# Відкриваємо порт для доступу
-EXPOSE 3000
+RUN npm run build
 
-# Команда для запуску додатку
-CMD ["npm", "start"]
+FROM nginx:alpine
+
+COPY --from=build /app/build /usr/share/nginx/html
+
+EXPOSE 80
+
+CMD ["nginx", "-g", "daemon off;"]

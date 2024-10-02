@@ -1,57 +1,46 @@
 name: CI/CD Pipeline
 
-# Виконання на пуші або пул-реквесті в основну гілку
 on:
   push:
     branches:
-      - master
+      - master # Ти можеш замінити це на іншу гілку, якщо потрібно
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-      # Checkout коду з репозиторію
       - name: Checkout code
         uses: actions/checkout@v2
 
-      # Встановлення Node.js для запуску тестів (якщо проект на Node.js)
       - name: Set up Node.js
         uses: actions/setup-node@v2
         with:
-          node-version: "14"
+          node-version: "16" # Використовуємо Node.js 16, щоб відповідати версії у Dockerfile
 
-      # Встановлення залежностей
       - name: Install dependencies
         run: npm install
 
-      # Запуск тестів
       - name: Run tests
         run: npm test
 
-      # Логін у DockerHub (опційно, якщо зберігаєш образи у DockerHub)
       - name: Log in to DockerHub
         uses: docker/login-action@v2
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_PASSWORD }}
 
-      # Білд Docker image
       - name: Build Docker image
         run: docker build -t myapp:${{ github.sha }} .
 
-      # Логін у Heroku Container Registry
       - name: Log in to Heroku
         run: echo "$HEROKU_API_KEY" | docker login --username=_ --password-stdin registry.heroku.com
 
-      # Тег Docker image для Heroku
       - name: Tag Docker image
         run: docker tag myapp:${{ github.sha }} registry.heroku.com/${{ secrets.HEROKU_APP_NAME }}/web
 
-      # Пуш Docker image в Heroku
       - name: Push to Heroku
         run: docker push registry.heroku.com/${{ secrets.HEROKU_APP_NAME }}/web
 
-      # Відкат деплою в Heroku
       - name: Release to Heroku
         run: heroku container:release web --app ${{ secrets.HEROKU_APP_NAME }}
