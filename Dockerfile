@@ -25,6 +25,5 @@ COPY --from=build /app/build /usr/share/nginx/html
 # Копіюємо конфігурацію Nginx
 COPY nginx.conf /etc/nginx/conf.d/default.conf 
 
-
 # Команда для запуску Nginx
 CMD ["nginx", "-g", "daemon off;"]

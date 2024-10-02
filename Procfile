@@ -1,1 +1,1 @@
-web: heroku container:release web # Вказуємо, що це веб-додаток
+web: nginx -g 'daemon off;'
