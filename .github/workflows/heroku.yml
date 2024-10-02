@@ -18,20 +18,22 @@ jobs:
 
       - name: Login to Heroku
         run: |
-          echo "Logging in to Heroku..."
-          echo ${{ secrets.HEROKU_API_KEY }} | docker login --username=_ --password-stdin registry.heroku.com
+          echo "${{ secrets.HEROKU_API_KEY }}" | docker login --username=_ --password-stdin registry.heroku.com
 
       - name: Build Docker image
         run: |
-          echo "Building Docker image..."
           docker build . -t registry.heroku.com/${{ secrets.HEROKU_APP_NAME }}/web
 
       - name: Push Docker image to Heroku
         run: |
-          echo "Pushing Docker image to Heroku..."
           docker push registry.heroku.com/${{ secrets.HEROKU_APP_NAME }}/web
 
-      - name: Release the app on Heroku
+      - name: Install Heroku CLI
         run: |
-          echo "Releasing the app on Heroku..."
+          curl https://cli-assets.heroku.com/install.sh | sh
+
+      - name: Release the app on Heroku
+        env:
+          HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
+        run: |
           heroku container:release web --app ${{ secrets.HEROKU_APP_NAME }}
