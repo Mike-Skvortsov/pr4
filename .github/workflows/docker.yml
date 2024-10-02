@@ -27,7 +27,7 @@ jobs:
       - name: Build Docker image
         run: |
           echo "Building Docker image..."
-          docker build . -t ${{ secrets.DOCKER_USERNAME }}/my-react-app:${{ github.sha }}
+          docker build . -t ${{ secrets.DOCKER_USERNAME }}/pr4:${{ github.sha }}
 
       - name: Log in to Docker Hub
         run: |
@@ -37,4 +37,4 @@ jobs:
       - name: Push Docker image
         run: |
           echo "Pushing Docker image..."
-          docker push ${{ secrets.DOCKER_USERNAME }}/my-react-app:${{ github.sha }}
+          docker push ${{ secrets.DOCKER_USERNAME }}/pr4:${{ github.sha }}
