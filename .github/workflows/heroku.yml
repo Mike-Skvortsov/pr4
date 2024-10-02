@@ -3,37 +3,37 @@ name: Build and Deploy to Heroku
 on:
   push:
     branches:
-      - master
+      - master # Деплой буде відбуватись при пуші в master
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest # Використовуємо останню версію Ubuntu
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v2 # Клонуємо репозиторій
 
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
+        uses: docker/setup-buildx-action@v2 # Налаштовуємо Docker Buildx
 
       - name: Login to Heroku
         run: |
-          echo "${{ secrets.HEROKU_API_KEY }}" | docker login --username=_ --password-stdin registry.heroku.com
+          echo "${{ secrets.HEROKU_API_KEY }}" | docker login --username=_ --password-stdin registry.heroku.com  # Входимо в Heroku
 
       - name: Build Docker image
         run: |
-          docker build . -t registry.heroku.com/${{ secrets.HEROKU_APP_NAME }}/web
+          docker build . -t registry.heroku.com/${{ secrets.HEROKU_APP_NAME }}/web  # Створюємо Docker образ
 
       - name: Push Docker image to Heroku
         run: |
-          docker push registry.heroku.com/${{ secrets.HEROKU_APP_NAME }}/web
+          docker push registry.heroku.com/${{ secrets.HEROKU_APP_NAME }}/web  # Пушимо образ до Heroku
 
       - name: Install Heroku CLI
         run: |
-          curl https://cli-assets.heroku.com/install.sh | sh
+          curl https://cli-assets.heroku.com/install.sh | sh  # Встановлюємо Heroku CLI
 
       - name: Release the app on Heroku
         env:
-          HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
+          HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }} # Задаємо змінну середовища для ключа API
         run: |
-          heroku container:release web --app ${{ secrets.HEROKU_APP_NAME }}
+          heroku container:release web --app ${{ secrets.HEROKU_APP_NAME }}  # Випускаємо додаток на Heroku
