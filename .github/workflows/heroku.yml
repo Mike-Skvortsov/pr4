@@ -14,12 +14,12 @@ jobs:
 
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v3 # Оновлено до v3
+        uses: actions/checkout@v3 # Updated to v3
 
       - name: Set up Node.js
-        uses: actions/setup-node@v3 # Оновлено до v3
+        uses: actions/setup-node@v3 # Updated to v3
         with:
-          node-version: "20" # Оновлено до Node.js 20
+          node-version: "20" # Updated to Node.js 20
 
       - name: Install dependencies
         run: npm install
@@ -40,7 +40,7 @@ jobs:
         run: |
           curl -n -X PATCH https://api.heroku.com/account \
           -H "Authorization: Bearer ${{ secrets.HEROKU_API_KEY }}" \
-          -H "Accept: application/vnd.heroku.v3+json" \
+          -H "Accept: application/vnd.heroku+json; version=3" \
           -d '{ "terms_of_service": true }'
 
       - name: Push Docker Image to Heroku
