@@ -1,14 +1,19 @@
-# Вказуємо базовий образ
-FROM python:3.9-slim
+FROM node:14
 
-# Встановлюємо робочий каталог
 WORKDIR /app
 
-# Копіюємо файли проєкту в контейнер
-COPY . /app
+COPY package*.json ./
 
-# Встановлюємо залежності
-RUN pip install --no-cache-dir -r requirements.txt
+RUN npm install
 
-# Вказуємо команду для запуску програми
-CMD ["python", "main.py"]
+COPY . .
+
+RUN npm run build
+
+FROM nginx:alpine
+
+COPY --from=0 /app/build /usr/share/nginx/html
+
+EXPOSE 80
+
+CMD ["nginx", "-g", "daemon off;"]
