@@ -36,6 +36,13 @@ jobs:
       - name: Log in to Heroku Container Registry
         run: echo ${{ secrets.HEROKU_API_KEY }} | docker login --username=_ --password-stdin registry.heroku.com
 
+      - name: Accept Heroku Terms of Service
+        run: |
+          curl -n -X PATCH https://api.heroku.com/account \
+          -H "Authorization: Bearer ${{ secrets.HEROKU_API_KEY }}" \
+          -H "Accept: application/vnd.heroku.v3+json" \
+          -d '{ "terms_of_service": true }'
+
       - name: Push Docker Image to Heroku
         run: |
           docker tag your-app-name registry.heroku.com/${{ secrets.HEROKU_APP_NAME }}/web
