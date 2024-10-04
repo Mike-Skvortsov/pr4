@@ -1,4 +1,5 @@
-FROM node:14
+# Перший етап: побудова додатку
+FROM node:14 as build
 
 WORKDIR /app
 
@@ -10,9 +11,10 @@ COPY . .
 
 RUN npm run build
 
+# Другий етап: налаштування сервера
 FROM nginx:alpine
 
-COPY --from=0 /app/build /usr/share/nginx/html
+COPY --from=build /app/build /usr/share/nginx/html
 
 EXPOSE 80
 
