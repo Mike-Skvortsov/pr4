@@ -1,29 +1,14 @@
-# Використовуємо образ Node.js для збирання
-FROM node:16 as build
+# Вказуємо базовий образ
+FROM python:3.9-slim
 
 # Встановлюємо робочий каталог
 WORKDIR /app
 
-# Копіюємо файл package.json і package-lock.json
-COPY package*.json ./
+# Копіюємо файли проєкту в контейнер
+COPY . /app
 
 # Встановлюємо залежності
-RUN npm install
+RUN pip install --no-cache-dir -r requirements.txt
 
-# Копіюємо решту коду
-COPY . .
-
-# Збираємо проект
-RUN npm run build
-
-# Використовуємо образ Nginx для сервінгу статичних файлів
-FROM nginx:alpine
-
-# Копіюємо зібрані файли в Nginx
-COPY --from=build /app/build /usr/share/nginx/html
-
-# Копіюємо конфігурацію Nginx
-COPY nginx.conf /etc/nginx/conf.d/default.conf 
-
-# Команда для запуску Nginx
-CMD ["nginx", "-g", "daemon off;"]
+# Вказуємо команду для запуску програми
+CMD ["python", "main.py"]
