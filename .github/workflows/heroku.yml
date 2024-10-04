@@ -1,39 +1,40 @@
-name: Build and Deploy to Heroku
+name: Heroku Pipeline
 
 on:
   push:
     branches:
-      - master # Деплой буде відбуватись при пуші в master
+      - master
+  pull_request:
+    branches:
+      - master
 
 jobs:
   build:
-    runs-on: ubuntu-latest # Використовуємо останню версію Ubuntu
+    runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2 # Клонуємо репозиторій
+      - name: Checkout code
+        uses: actions/checkout@v2
 
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2 # Налаштовуємо Docker Buildx
+        uses: docker/setup-buildx-action@v1
 
-      - name: Login to Heroku
-        run: |
-          echo "${{ secrets.HEROKU_API_KEY }}" | docker login --username=_ --password-stdin registry.heroku.com  # Входимо в Heroku
+      - name: Set up Node.js (заміни на свою платформу, якщо це не Node.js)
+        uses: actions/setup-node@v2
+        with:
+          node-version: "14"
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run tests
+        run: npm test
 
       - name: Build Docker image
-        run: |
-          docker build . -t registry.heroku.com/${{ secrets.HEROKU_APP_NAME }}/web  # Створюємо Docker образ
+        run: docker build . -t your-image-name
 
-      - name: Push Docker image to Heroku
-        run: |
-          docker push registry.heroku.com/${{ secrets.HEROKU_APP_NAME }}/web  # Пушимо образ до Heroku
+      - name: Log in to DockerHub
+        run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
 
-      - name: Install Heroku CLI
-        run: |
-          curl https://cli-assets.heroku.com/install.sh | sh  # Встановлюємо Heroku CLI
-
-      - name: Release the app on Heroku
-        env:
-          HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }} # Задаємо змінну середовища для ключа API
-        run: |
-          heroku container:release web --app ${{ secrets.HEROKU_APP_NAME }}  # Випускаємо додаток на Heroku
+      - name: Push Docker image to DockerHub
+        run: docker push your-dockerhub-username/your-image-name:latest
