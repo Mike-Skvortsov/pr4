@@ -1,4 +1,4 @@
-name: Build and Push Docker Image to Heroku
+name: Build and Deploy to Heroku
 
 on:
   push:
