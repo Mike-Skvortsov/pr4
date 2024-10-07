@@ -38,6 +38,12 @@ jobs:
             heroku create pr4
           fi
 
+      - name: Set Heroku stack to container
+        env:
+          HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
+        run: |
+          heroku stack:set container --app pr4
+
       - name: Build Docker image
         run: |
           docker build -t registry.heroku.com/pr4/web .
