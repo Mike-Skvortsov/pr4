@@ -24,15 +24,23 @@ jobs:
       - name: Run tests
         run: npm run test
 
-      - name: Build Docker image
-        run: |
-          docker build -t registry.heroku.com/pr4/web .
-
-      - name: Login to Heroku Container Registry
+      - name: Login to Heroku
         env:
           HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
         run: |
           echo $HEROKU_API_KEY | docker login --username=_ --password-stdin registry.heroku.com
+
+      - name: Create Heroku app if it doesn't exist
+        env:
+          HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
+        run: |
+          if ! heroku apps:info --app pr4; then
+            heroku create pr4
+          fi
+
+      - name: Build Docker image
+        run: |
+          docker build -t registry.heroku.com/pr4/web .
 
       - name: Push Docker image to Heroku
         run: |
